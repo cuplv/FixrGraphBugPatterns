@@ -14,21 +14,27 @@ import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity {
 
+    private FeedReaderDbHelper mDbHelper;
+
     void talkToDb() {
-        SQLiteDatabase db = SQLiteDatabase.openDatabase("db_filename", null,
+        /*
+        SQLiteDatabase db = SQLiteDatabase.openDatabase(FeedReaderDbHelper.DATABASE_NAME, null,
                 SQLiteDatabase.CREATE_IF_NECESSARY);
+        */
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        db.beginTransaction();
         try {
-            db.beginTransaction();
             db.setTransactionSuccessful();
+        } catch(Exception e){
+            // here you can catch all the exceptions
+            e.printStackTrace();
         } finally {
             db.endTransaction();
         }
     }
 
-
     void talkToDbBuggy() {
-        SQLiteDatabase db = SQLiteDatabase.openDatabase("db_filename", null,
-                SQLiteDatabase.CREATE_IF_NECESSARY);
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
         db.beginTransaction();
         db.setTransactionSuccessful();
         db.endTransaction();
@@ -37,6 +43,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // mDbHelper = new FeedReaderDbHelper(this.getContext())
+        mDbHelper = new FeedReaderDbHelper(this);
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -47,8 +57,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
-                talkToDb();
-                // talkToDbBuggy();
+                // talkToDb();
+                talkToDbBuggy();
             }
         });
     }
